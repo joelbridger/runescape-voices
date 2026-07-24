@@ -100,10 +100,11 @@ It loaded the refreshed gender-aware voice list with no startup error.
 ## Current provider allowance
 
 After the successful live test, ElevenLabs began returning HTTP 402, meaning the
-account has no paid speech allowance available for new lines. This explains why
-Jameson heard cached NPC speech but not a new player line. No purchase was made
-by the project. Cached recordings remain usable; new NPC and player dialogue
-will resume after Jameson adds paid API speech allowance.
+account had no API speech allowance available for new lines. This explained why
+Jameson heard cached NPC speech but not a new player line. Jameson then upgraded
+the account to the Starter plan himself. The ElevenLabs account page confirms
+Starter is active, and the Windows voice service is running `ready` with no
+error. One manual player-dialogue line remains to confirm the male cast audibly.
 
 ## RuneScape coaching checkpoint
 
