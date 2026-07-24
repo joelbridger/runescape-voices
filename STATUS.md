@@ -30,6 +30,12 @@ RuneLite, then start `GielinorVoicesService` and
 dialogue. Do not reinstall unless those existing tasks or installed files are
 actually broken.
 
+Jameson then explicitly requested the switch. Ordinary RuneLite closed cleanly,
+the existing service task started, health returned `ready`, and the combined
+voice-and-coach RuneLite window opened successfully. The installed build is
+therefore running again. The remaining acceptance check is still to log in
+manually and hear a real NPC line.
+
 ## What is installed
 
 - Windows desktop shortcut: `RuneScape Voices (Local)`
