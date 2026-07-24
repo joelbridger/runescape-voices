@@ -8,6 +8,7 @@
 | `VoiceServiceClient` | Sends authenticated JSON only to the fixed loopback address. |
 | `SpeechController` | Keeps the newest useful line, cancels skipped lines, manages playback, and caches audio. |
 | `CastingDirector` | Gives each character a stable voice and performance direction. |
+| `ElevenLabsVoiceEngine` | Streams low-delay PCM speech from ElevenLabs Flash when Jameson enables it. |
 | `QwenVoiceEngine` | Generates local high-quality speech on the NVIDIA GPU. |
 | `VoiceHTTPServer` | Exposes health, speech, and cancellation only on `127.0.0.1`. |
 | `vendor/runescape-coach-plugin` | Pinned public coaching plugin loaded beside voices in the local development client. |
@@ -26,14 +27,17 @@
 6. `VoiceHTTPServer` checks the address, pairing key, body size, exact fields,
    field types, and allowed dialogue kind.
 7. `SpeechController` applies priority and cancellation rules.
-8. `CastingDirector` maps the stable speaker to one of the licensed Qwen voices
-   and a delivery direction. Important named characters use written cast
-   choices; other characters use a repeatable hash.
-9. The cache looks for an exact prior recording. On a miss, `QwenVoiceEngine`
-   creates a new waveform on the local NVIDIA GPU.
-10. The WAV is stored privately and played through Windows. A cancelled
-    generation may finish internally, but its audio is discarded rather than
-    played.
+8. `CastingDirector` maps the stable speaker to a permanent voice slot. Important
+   named characters use written cast choices; other characters use a repeatable
+   hash.
+9. The cache looks for an exact prior recording.
+10. When an ElevenLabs key is installed, the service streams 24 kHz raw speech
+    from Flash v2.5 and begins playback with the first chunk. It records the
+    first-sound delay in health status as `lastFirstAudioMs`.
+11. Without that key, `QwenVoiceEngine` creates the complete waveform on the
+    local NVIDIA GPU before playback.
+12. The finished WAV is stored privately. Skipped speech is stopped and an
+    incomplete streamed line is never cached.
 
 The server, dashboard, Wiki library, and Character Export pipeline do not sit in
 this speech path. Voice acting still works if the home server is unavailable.
@@ -62,7 +66,7 @@ Dialogue-box lines have priority over overhead speech. A new dialogue line
 replaces the old pending line and stops old playback. NPC overhead speech is
 ignored while a dialogue-box line is being generated, queued, or played.
 
-Model generation cannot always be interrupted safely inside a GPU call. When a
+Local model generation cannot always be interrupted safely inside a GPU call. When a
 line is skipped during generation, its result is discarded and never played.
 The newest line proceeds next. Cached lines can stop and change immediately.
 
@@ -91,7 +95,11 @@ require a random token shared through the user's private RuneLite data folder.
 Health exposes only engine readiness, not dialogue or credentials.
 
 The service does not rewrite text or call a language model for story content.
-Qwen3-TTS receives the exact text plus a separate delivery instruction.
+Qwen3-TTS receives the exact text plus a separate delivery instruction. The
+online engine receives only the exact visible text, one selected voice ID, and
+ordinary voice controls. The ElevenLabs key stays in an access-protected file
+under the Windows service data folder and never enters RuneLite, logs, health,
+Git, or the Jameworld server.
 
 ## Combined legitimate local client
 

@@ -2,12 +2,11 @@
 
 ## Pause point
 
-The private voice system is built and installed on Jameson's Windows PC. Its
-current running state is recorded below. Work is deliberately paused before the
-first real in-game listening check.
-
-Do not rebuild or reinstall it merely because a new session begins. Resume with
-the listening check below.
+Jameson heard a real NPC line through the combined RuneLite client. The complete
+local system works, but the unseen line took roughly 30 seconds to begin. The
+current work replaces that slow live miss with streamed ElevenLabs Flash speech.
+The hard acceptance target is `lastFirstAudioMs` at or below 1,000 on a real
+uncached NPC line.
 
 ## Latest runtime finding
 
@@ -33,8 +32,20 @@ actually broken.
 Jameson then explicitly requested the switch. Ordinary RuneLite closed cleanly,
 the existing service task started, health returned `ready`, and the combined
 voice-and-coach RuneLite window opened successfully. The installed build is
-therefore running again. The remaining acceptance check is still to log in
-manually and hear a real NPC line.
+therefore running again. Jameson then heard a real NPC line, proving the full
+path. Its roughly 30-second delay was not acceptable.
+
+Direct tests on the real PC found the cause:
+
+- local Qwen waits for the whole waveform before playback;
+- its installed Python interface does not expose true audio streaming;
+- local Kokoro loaded in 1.400 seconds, then needed 2.761 seconds for a tiny
+  line, 5.162 seconds for a medium line, and 8.443 seconds for a longer line;
+- therefore neither tested local path can meet the one-second requirement.
+
+The chosen design uses ElevenLabs Flash v2.5 for a new uncached line, streams
+raw audio directly to the speakers, keeps stable character casting, and saves
+the finished line in the private cache. Qwen remains the no-key local choice.
 
 ## What is installed
 
@@ -73,26 +84,17 @@ archives before using them.
 
 ## What has not been proved yet
 
-Only Jameson can prove the final experience through the real speakers:
-
-1. Open the already-running combined RuneLite window, or use
-   `RuneScape Voices (Local)` on the desktop.
-2. Log in manually if needed.
-3. Talk to any NPC. The Lumbridge Cook is a useful choice because that is also
-   the saved coaching destination.
-4. Leave the first line visible until it speaks.
-5. Advance or close the dialogue and confirm the old line stops.
-6. Report whether the voice was heard, whether it fit the character, and whether
-   the pause before speech felt acceptable.
-
-No game input may be automated for this test.
+The streamed build still needs its one-time ElevenLabs key, a Windows install,
+and a real uncached NPC test. Health must name the ElevenLabs Flash engine and
+report `lastFirstAudioMs` at or below 1,000. No game input may be automated for
+that test.
 
 ## RuneScape coaching checkpoint
 
-Voice work did not move the account. The separate RuneScape Coach project
-remains paused after **Death to the Dorgeshuun** and before finishing
-**Cook's Assistant**. Character Export snapshot 007433 remains the proven
-carried state. The authoritative instructions are in:
+Voice work did not move the account. The separate RuneScape Coach project is
+paused outside the Recipe for Disaster banquet room after the opening banquet
+scene. No frozen guest has been inspected yet. The next recommended subquest is
+the Goblin Generals. The authoritative instructions are in:
 
 - `/home/jameson/RuneScape/plans/CURRENT.md`
 - `/home/jameson/RuneScape/plans/FORWARD.md`

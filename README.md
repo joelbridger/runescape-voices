@@ -26,7 +26,8 @@ Thin read-only Java listener
 Private Windows voice service
         |
         +--> stable character casting
-        +--> Qwen3-TTS local GPU speech
+        +--> ElevenLabs Flash streamed speech (when enabled)
+        +--> Qwen3-TTS local GPU speech (private fallback)
         +--> private repeated-line cache
         +--> Windows speakers
 ```
@@ -45,11 +46,14 @@ same client.
 - Repeated lines play from a private local cache.
 - NPC overhead speech cannot interrupt an active dialogue box.
 
-The first high-quality engine is
-[Qwen3-TTS 0.6B CustomVoice](https://github.com/QwenLM/Qwen3-TTS). Its model and
-generated recordings stay on the Windows PC. The casting layer is intentionally
-separate so a later listening comparison can replace the speaking engine without
-rewriting the RuneLite plugin.
+The recommended live engine is ElevenLabs Flash v2.5. It streams sound while the
+rest of the sentence is still being made. Only the exact visible line and a
+voice ID leave the PC. Account data, login details, chat, and game controls never
+leave the PC.
+
+[Qwen3-TTS 0.6B CustomVoice](https://github.com/QwenLM/Qwen3-TTS) remains the
+fully local choice when no online key is installed. Repeated recordings always
+stay in the private Windows cache and play without another online request.
 
 ## Development checks
 

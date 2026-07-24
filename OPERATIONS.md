@@ -25,9 +25,10 @@ windows-pc run 'Get-ScheduledTask -TaskName "GielinorVoicesService","RuneScapeVo
 windows-pc run 'Invoke-RestMethod "http://127.0.0.1:17855/health" | ConvertTo-Json -Compress'
 ```
 
-Healthy service output says `ready`, names the local Qwen engine, and has no
-error. `loading` is normal while the model is entering graphics-card memory.
-Health never contains dialogue or a secret.
+Healthy service output says `ready`, names either `elevenlabs:...` or `qwen3...`,
+and has no error. It also reports the most recent first-sound delay in
+`lastFirstAudioMs`. `loading` is normal while the local model is entering
+graphics-card memory. Health never contains dialogue or a secret.
 
 ## Starting the programs
 
@@ -65,8 +66,22 @@ Never read or display:
 
 - `%USERPROFILE%\.runelite\gielinor-voices\token`
 - `%USERPROFILE%\.runelite\credentials.properties`
+- `%LOCALAPPDATA%\GielinorVoices\runtime\secrets\elevenlabs-api-key`
 
-Checking that either file exists is allowed when needed.
+Checking that these files exist is allowed when needed.
+
+## Fast online voice mode
+
+The online path is optional. The service selects it automatically when the
+protected ElevenLabs key file exists. Its setup helper asks Jameson to paste the
+key into a hidden prompt, locks the folder to his Windows user, and restarts the
+service. Do not pass the key on a command line because command history can save
+it.
+
+The helper is served privately as `/voice-online-setup.ps1`. Confirm health
+names `elevenlabs:eleven_flash_v2_5` after setup. Only visible dialogue is sent
+to ElevenLabs. Deleting the key file and restarting the task returns the service
+to fully local Qwen speech.
 
 ## Tests
 
@@ -115,12 +130,13 @@ If voice acting stops:
 1. Check service health.
 2. If health says `loading`, leave the model alone and check again.
 3. If health says `error`, read the small tail of `service.log`.
-4. Restart only `GielinorVoicesService`.
-5. If the plugin is absent, close the combined local client and start
+4. If online speech fails, check the ElevenLabs plan/key without printing the
+   key. Removing the key file safely returns to local speech.
+5. Restart only `GielinorVoicesService`.
+6. If the plugin is absent, close the combined local client and start
    `RuneScapeVoicesLocalLaunch` again.
-6. Reinstall only when source, tasks, or the isolated Python environment is
+7. Reinstall only when source, tasks, or the isolated Python environment is
    actually missing or broken.
 
 Do not delete the model cache as a first repair. Do not weaken the loopback
 address or pairing check. Do not modify the normal RuneLite installation.
-

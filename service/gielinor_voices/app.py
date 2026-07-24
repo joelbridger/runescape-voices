@@ -9,6 +9,7 @@ import threading
 from pathlib import Path
 
 from .controller import SpeechController
+from .engine import ElevenLabsVoiceEngine, QwenVoiceEngine
 from .server import VoiceHTTPServer
 
 
@@ -23,12 +24,21 @@ def _default_token_file() -> Path:
     return Path.home() / ".runelite" / "gielinor-voices" / "token"
 
 
+def _default_elevenlabs_key_file() -> Path:
+    return _default_data_dir() / "secrets" / "elevenlabs-api-key"
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Private local RuneScape voice service")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=17855)
     parser.add_argument("--token-file", type=Path, default=_default_token_file())
     parser.add_argument("--data-dir", type=Path, default=_default_data_dir())
+    parser.add_argument(
+        "--elevenlabs-key-file",
+        type=Path,
+        default=_default_elevenlabs_key_file(),
+    )
     parser.add_argument("--log-file", type=Path)
     return parser
 
@@ -51,7 +61,20 @@ def main() -> None:
         handlers=handlers,
     )
 
-    controller = SpeechController(args.data_dir / "cache")
+    if args.elevenlabs_key_file.exists():
+        engine_factory = lambda: ElevenLabsVoiceEngine(  # noqa: E731
+            args.elevenlabs_key_file,
+            args.data_dir / "elevenlabs-voices.json",
+        )
+        logging.getLogger(__name__).info(
+            "Fast online voices are enabled; only visible dialogue is sent"
+        )
+    else:
+        engine_factory = QwenVoiceEngine
+        logging.getLogger(__name__).info(
+            "No ElevenLabs key is installed; using the slower local voice engine"
+        )
+    controller = SpeechController(args.data_dir / "cache", engine_factory)
     controller.start()
     server = VoiceHTTPServer((args.host, args.port), token, controller)
 
@@ -77,4 +100,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
