@@ -1,0 +1,11 @@
+.gradle/
+build/
+.idea/
+*.iml
+service/.venv/
+service/.pytest_cache/
+service/**/__pycache__/
+service/*.egg-info/
+service/runtime/
+*.log
+

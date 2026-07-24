@@ -1,0 +1,5 @@
+rootProject.name = 'gielinor-voices'
+
+include 'coach'
+project(':coach').projectDir = file('vendor/runescape-coach-plugin')
+

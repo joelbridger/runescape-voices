@@ -1,0 +1,10 @@
+Dialogue detection in this project was informed by Natural Speech for RuneLite:
+https://github.com/phyce/rl-natural-speech
+
+Natural Speech is Copyright (c) 2024 phyce and licensed under the BSD 2-Clause
+License. Its full license is available at:
+https://github.com/phyce/rl-natural-speech/blob/master/LICENSE
+
+This project does not contain Natural Speech's Piper engine, model downloader,
+voice packs, user interface, or configuration system.
+

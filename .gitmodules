@@ -1,0 +1,3 @@
+[submodule "vendor/runescape-coach-plugin"]
+	path = vendor/runescape-coach-plugin
+	url = https://github.com/joelbridger/runescape-coach-plugin.git
