@@ -29,7 +29,14 @@ def _files(tmp_path: Path) -> tuple[Path, Path]:
     key_file.write_text("sk_" + "x" * 48, encoding="utf-8")
     catalog_file = tmp_path / "voices.json"
     catalog_file.write_text(
-        json.dumps({"voiceIds": ["voice-one", "voice-two"]}),
+        json.dumps(
+            {
+                "voices": [
+                    {"voiceId": "voice-one", "gender": "female"},
+                    {"voiceId": "voice-two", "gender": "male"},
+                ]
+            }
+        ),
         encoding="utf-8",
     )
     return key_file, catalog_file
@@ -121,5 +128,27 @@ def test_elevenlabs_fetches_and_saves_available_voice_catalog(tmp_path: Path) ->
 
     assert engine.identity.startswith("elevenlabs:eleven_flash_v2_5:")
     assert json.loads(catalog_file.read_text(encoding="utf-8")) == {
-        "voiceIds": ["female-voice", "male-voice"]
+        "voices": [
+            {"voiceId": "female-voice", "gender": "female"},
+            {"voiceId": "male-voice", "gender": "male"},
+        ]
     }
+
+
+def test_player_cast_always_uses_a_male_online_voice(tmp_path: Path) -> None:
+    key_file, catalog_file = _files(tmp_path)
+    calls: list[Any] = []
+
+    def opener(request: Any, **_: object) -> FakeResponse:
+        calls.append(request)
+        return FakeResponse([np.array([0, 1], dtype="<i2").tobytes()])
+
+    engine = ElevenLabsVoiceEngine(key_file, catalog_file, opener=opener)
+    list(
+        engine.stream(
+            "I will take care of it.",
+            Performance("Ryan", "Speak as a capable adventurer."),
+        )
+    )
+
+    assert "/v1/text-to-speech/voice-two/stream" in calls[0].full_url

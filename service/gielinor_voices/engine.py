@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import json
 import hashlib
+from dataclasses import dataclass
 from pathlib import Path
 from collections.abc import Iterator
 from typing import Any, Callable, Protocol, runtime_checkable
@@ -18,6 +19,12 @@ MODEL_ID = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"
 ELEVENLABS_MODEL_ID = "eleven_flash_v2_5"
 ELEVENLABS_SAMPLE_RATE = 24_000
 ELEVENLABS_API_ROOT = "https://api.elevenlabs.io"
+
+
+@dataclass(frozen=True, slots=True)
+class OnlineVoice:
+    voice_id: str
+    gender: str
 
 
 @runtime_checkable
@@ -91,6 +98,8 @@ class ElevenLabsVoiceEngine:
         "Ono_Anna",
         "Sohee",
     )
+    _FEMALE_SPEAKERS = frozenset({"Vivian", "Serena", "Ono_Anna", "Sohee"})
+    _MALE_SPEAKERS = frozenset({"Uncle_Fu", "Dylan", "Eric", "Ryan", "Aiden"})
 
     def __init__(
         self,
@@ -106,14 +115,16 @@ class ElevenLabsVoiceEngine:
         self._api_key = api_key
         self._api_root = api_root.rstrip("/")
         self._opener = opener
-        self._voice_ids = self._load_or_fetch_voice_ids(catalog_file)
+        self._voices = self._load_or_fetch_voices(catalog_file)
         catalog_digest = hashlib.sha256(
-            "\n".join(self._voice_ids).encode("utf-8")
+            "\n".join(
+                f"{voice.gender}:{voice.voice_id}" for voice in self._voices
+            ).encode("utf-8")
         ).hexdigest()[:12]
         self._identity = f"elevenlabs:{ELEVENLABS_MODEL_ID}:pcm24k:{catalog_digest}"
         LOGGER.info(
             "ElevenLabs streaming voice engine is ready with %s character voices",
-            len(self._voice_ids),
+            len(self._voices),
         )
 
     @property
@@ -177,20 +188,33 @@ class ElevenLabsVoiceEngine:
             raise RuntimeError("ElevenLabs returned incomplete audio")
 
     def _voice_for(self, performance: Performance) -> str:
+        desired_gender = self._gender_for(performance.speaker)
+        candidates = tuple(
+            voice for voice in self._voices if voice.gender == desired_gender
+        )
+        if not candidates:
+            candidates = self._voices
         try:
             slot = self._SPEAKER_SLOTS.index(performance.speaker)
         except ValueError:
             digest = hashlib.sha256(performance.speaker.encode("utf-8")).digest()
             slot = int.from_bytes(digest[:4], "big")
-        return self._voice_ids[slot % len(self._voice_ids)]
+        return candidates[slot % len(candidates)].voice_id
 
-    def _load_or_fetch_voice_ids(self, catalog_file: Path) -> tuple[str, ...]:
+    def _gender_for(self, speaker: str) -> str:
+        if speaker in self._MALE_SPEAKERS:
+            return "male"
+        if speaker in self._FEMALE_SPEAKERS:
+            return "female"
+        return "other"
+
+    def _load_or_fetch_voices(self, catalog_file: Path) -> tuple[OnlineVoice, ...]:
         if catalog_file.exists():
             try:
                 catalog = json.loads(catalog_file.read_text(encoding="utf-8"))
-                voice_ids = self._validate_catalog(catalog)
-                if voice_ids:
-                    return voice_ids
+                voices = self._validate_catalog(catalog)
+                if voices:
+                    return voices
             except (OSError, ValueError, json.JSONDecodeError):
                 LOGGER.warning("The saved ElevenLabs voice list was invalid; refreshing it")
 
@@ -232,11 +256,11 @@ class ElevenLabsVoiceEngine:
         for gender, _, voice_id in candidates:
             group = gender if gender in {"female", "male"} else "other"
             groups[group].append(voice_id)
-        selected: list[str] = []
+        selected: list[OnlineVoice] = []
         while len(selected) < 18 and any(groups.values()):
             for group in ("female", "male", "other"):
                 if groups[group]:
-                    selected.append(groups[group].pop(0))
+                    selected.append(OnlineVoice(groups[group].pop(0), group))
                     if len(selected) == 18:
                         break
         if not selected:
@@ -245,22 +269,39 @@ class ElevenLabsVoiceEngine:
         catalog_file.parent.mkdir(parents=True, exist_ok=True)
         temporary = catalog_file.with_suffix(".tmp")
         temporary.write_text(
-            json.dumps({"voiceIds": selected}, indent=2) + "\n",
+            json.dumps(
+                {
+                    "voices": [
+                        {"voiceId": voice.voice_id, "gender": voice.gender}
+                        for voice in selected
+                    ]
+                },
+                indent=2,
+            )
+            + "\n",
             encoding="utf-8",
         )
         temporary.replace(catalog_file)
         return tuple(selected)
 
     @staticmethod
-    def _validate_catalog(value: Any) -> tuple[str, ...]:
-        if not isinstance(value, dict) or set(value) != {"voiceIds"}:
+    def _validate_catalog(value: Any) -> tuple[OnlineVoice, ...]:
+        if not isinstance(value, dict) or set(value) != {"voices"}:
             return ()
-        voice_ids = value["voiceIds"]
-        if not isinstance(voice_ids, list):
+        values = value["voices"]
+        if not isinstance(values, list):
             return ()
-        clean = tuple(
-            voice_id
-            for voice_id in voice_ids
-            if isinstance(voice_id, str) and 8 <= len(voice_id) <= 80
-        )
-        return clean if len(clean) == len(voice_ids) else ()
+        clean: list[OnlineVoice] = []
+        for item in values:
+            if not isinstance(item, dict) or set(item) != {"voiceId", "gender"}:
+                return ()
+            voice_id = item["voiceId"]
+            gender = item["gender"]
+            if (
+                not isinstance(voice_id, str)
+                or not 8 <= len(voice_id) <= 80
+                or gender not in {"female", "male", "other"}
+            ):
+                return ()
+            clean.append(OnlineVoice(voice_id, gender))
+        return tuple(clean)

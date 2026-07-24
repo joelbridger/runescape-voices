@@ -12,6 +12,21 @@ def test_named_character_has_a_deliberate_cast() -> None:
     assert "cave goblin" in performance.instruction
 
 
+def test_local_player_has_a_deliberate_male_cast() -> None:
+    performance = CastingDirector().performance_for(
+        SpeechRequest(
+            "player:local",
+            "Player",
+            "I will take care of it.",
+            "player-dialogue",
+            1,
+            1.0,
+        )
+    )
+    assert performance.speaker == "Ryan"
+    assert "capable adventurer" in performance.instruction
+
+
 def test_unknown_character_cast_is_stable() -> None:
     director = CastingDirector()
     first = director.performance_for(request("npc:guard"))
@@ -26,4 +41,3 @@ def test_different_characters_receive_variety() -> None:
         for index in range(30)
     }
     assert len(performances) >= 10
-
