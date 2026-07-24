@@ -10,8 +10,12 @@ uncached NPC line.
 
 The streamed engine is now installed and active. A fresh uncached loopback test
 reached first audio in **844 ms**, with no service error. This passes the
-one-second technical target. One real NPC line remains as the final human
-experience check.
+one-second technical target. Jameson then confirmed that it worked during real
+game dialogue.
+
+Orc_Bane55's own dialogue is deliberately cast as the male adventurer voice
+`Ryan`. The online picker now also guarantees that this cast uses an
+ElevenLabs voice labeled male.
 
 ## Latest runtime finding
 
@@ -58,7 +62,7 @@ the finished line in the private cache. Qwen remains the no-key local choice.
 - Background task: `GielinorVoicesService`
 - Combined RuneLite task: `RuneScapeVoicesLocalLaunch`
 - Voice listener source:
-  `%LOCALAPPDATA%\GielinorVoices\source-aee1a522fbc36967c0b58b06453480fa6a8934d8`
+  `%LOCALAPPDATA%\GielinorVoices\source-e318c014d2af77d3286b63d3a3e0e8895542f460`
 - Service environment:
   `%LOCALAPPDATA%\GielinorVoices\service`
 - Models, cache, and service log:
@@ -70,16 +74,16 @@ Never read, print, copy, or upload the pairing key. Never read RuneLite's
 `credentials.properties`. The installed programs use those files privately.
 
 The installed voice source is commit
-`aee1a522fbc36967c0b58b06453480fa6a8934d8`. It includes the RuneScape Coach
+`e318c014d2af77d3286b63d3a3e0e8895542f460`. It includes the RuneScape Coach
 plugin pinned at `736ab5f8`. The private installer verifies both downloaded
 archives before using them.
 
 The updated service is running and health names the ElevenLabs Flash engine.
-The response includes `lastFirstAudioMs: 844` and no error.
+It loaded the refreshed gender-aware voice list with no startup error.
 
 ## What has been proved
 
-- Twelve Python voice-service tests passed on the actual Windows installation.
+- Fourteen Python voice-service tests passed on the actual Windows installation.
 - The voice and coach Java tests passed together in a clean Windows build.
 - The service reports `ready` with no error.
 - Qwen3-TTS 0.6B CustomVoice loaded on the RTX 5070.
@@ -88,14 +92,18 @@ The response includes `lastFirstAudioMs: 844` and no error.
 - A request without the private pairing key was rejected.
 - The combined RuneLite window opened with both plugin classes loaded through
   RuneLite's official development-client path.
+- Jameson confirmed that fast speech worked in the real game.
+- Player casting tests prove that `player:local` selects the deliberate male
+  cast and a provider voice labeled male.
 - The server and voice repositories are clean, saved, and backed up on GitHub.
 
-## What has not been proved yet
+## Current provider allowance
 
-Jameson should speak to one real NPC in the already-running combined RuneLite
-client and confirm that the line is heard promptly and suits the character. The
-service-side one-second target is already proved at 844 ms. No game input may be
-automated for the final check.
+After the successful live test, ElevenLabs began returning HTTP 402, meaning the
+account has no paid speech allowance available for new lines. This explains why
+Jameson heard cached NPC speech but not a new player line. No purchase was made
+by the project. Cached recordings remain usable; new NPC and player dialogue
+will resume after Jameson adds paid API speech allowance.
 
 ## RuneScape coaching checkpoint
 
@@ -128,5 +136,11 @@ Dashboard and coaching-plan publication remain paused.
 6. The first dedicated provider key appeared in a diagnostic capture. It was
    deleted before use. Its restricted replacement was transferred without
    printing it, and the temporary server copy was securely removed.
+7. The first online catalog kept voice IDs but discarded gender labels, so a
+   male local cast did not prove a male provider voice. The installed build now
+   preserves those labels and limits Orc_Bane55's cast to male-labeled voices.
+8. Silence after the successful live test was not a RuneLite player-dialogue
+   failure. The service log proved that the request reached ElevenLabs and was
+   rejected with HTTP 402 because the speech allowance was empty.
 
 These fixes are already in source and must not be undone.

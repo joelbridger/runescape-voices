@@ -30,6 +30,10 @@ and has no error. It also reports the most recent first-sound delay in
 `lastFirstAudioMs`. `loading` is normal while the local model is entering
 graphics-card memory. Health never contains dialogue or a secret.
 
+If cached lines speak but new lines do not, check the small safe log tail. HTTP
+402 from ElevenLabs means the account's speech allowance is empty; reinstalling
+the plugin will not fix it.
+
 ## Starting the programs
 
 Start the background service:

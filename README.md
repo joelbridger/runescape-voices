@@ -39,6 +39,8 @@ same client.
 ## Voice behavior
 
 - Every speaker key receives a permanent, deterministic voice.
+- Orc_Bane55's own dialogue uses a deliberately chosen male adventurer voice,
+  and the online picker requires a provider voice labeled male.
 - Important characters can have deliberately written casting directions.
 - The exact visible text is sent to the engine without rewriting.
 - New dialogue replaces older queued dialogue.
@@ -50,6 +52,10 @@ The recommended live engine is ElevenLabs Flash v2.5. It streams sound while the
 rest of the sentence is still being made. Only the exact visible line and a
 voice ID leave the PC. Account data, login details, chat, and game controls never
 leave the PC.
+
+New online lines require available ElevenLabs API speech allowance. Previously
+created recordings remain in the private Windows cache when that allowance is
+empty.
 
 [Qwen3-TTS 0.6B CustomVoice](https://github.com/QwenLM/Qwen3-TTS) remains the
 fully local choice when no online key is installed. Repeated recordings always

@@ -29,7 +29,8 @@
 7. `SpeechController` applies priority and cancellation rules.
 8. `CastingDirector` maps the stable speaker to a permanent voice slot. Important
    named characters use written cast choices; other characters use a repeatable
-   hash.
+   hash. The local player uses the deliberate male cast `Ryan`; the online
+   picker then selects only a provider voice labeled male for that cast.
 9. The cache looks for an exact prior recording.
 10. When an ElevenLabs key is installed, the service streams 24 kHz raw speech
     from Flash v2.5 and begins playback with the first chunk. It records the
