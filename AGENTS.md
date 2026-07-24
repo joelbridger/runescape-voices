@@ -1,5 +1,8 @@
 # Gielinor Voices rules
 
+- Read `STATUS.md`, `README.md`, `ARCHITECTURE.md`, and `OPERATIONS.md` before
+  changing or reinstalling anything. The current system is already installed;
+  do not mistake the pending human listening check for a missing build.
 - This is a private, read-only RuneLite voice-acting system.
 - It may observe only visible NPC dialogue widgets, the local player's dialogue
   widgets, NPC overhead text, and dialogue open/close events.
@@ -20,4 +23,3 @@
 - Keep blocking file, network, and model work off RuneLite's client thread.
 - Run both Java and Python tests before saving a release.
 - Only Jameson can confirm the final audible behavior inside the real game.
-

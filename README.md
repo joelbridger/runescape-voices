@@ -70,3 +70,10 @@ uv run pytest
 The complete safety and maintenance explanation is in
 [ARCHITECTURE.md](ARCHITECTURE.md).
 
+## Start here when resuming
+
+- [Pinned status](STATUS.md) — exactly what is installed, what was proved, and
+  the one remaining human listening check.
+- [Operations](OPERATIONS.md) — safe startup, checks, updates, and recovery.
+- [Architecture](ARCHITECTURE.md) — how dialogue becomes local speech.
+- [Agent rules](AGENTS.md) — boundaries that must never be weakened.

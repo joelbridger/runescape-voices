@@ -12,6 +12,32 @@
 | `VoiceHTTPServer` | Exposes health, speech, and cancellation only on `127.0.0.1`. |
 | `vendor/runescape-coach-plugin` | Pinned public coaching plugin loaded beside voices in the local development client. |
 
+## Complete data flow
+
+1. RuneLite raises a normal widget or overhead-text event.
+2. `GielinorVoicesPlugin` accepts only the configured NPC dialogue, local-player
+   dialogue, or NPC overhead surface.
+3. RuneLite formatting tags are removed, but the words are not rewritten.
+4. `SpeakerKeys` makes a stable identity from the player, NPC name, NPC ID, or
+   visible head model.
+5. `VoiceServiceClient` sends the approved JSON shape to the fixed loopback
+   address with the private pairing header. This work stays off RuneLite's game
+   thread.
+6. `VoiceHTTPServer` checks the address, pairing key, body size, exact fields,
+   field types, and allowed dialogue kind.
+7. `SpeechController` applies priority and cancellation rules.
+8. `CastingDirector` maps the stable speaker to one of the licensed Qwen voices
+   and a delivery direction. Important named characters use written cast
+   choices; other characters use a repeatable hash.
+9. The cache looks for an exact prior recording. On a miss, `QwenVoiceEngine`
+   creates a new waveform on the local NVIDIA GPU.
+10. The WAV is stored privately and played through Windows. A cancelled
+    generation may finish internally, but its audio is discarded rather than
+    played.
+
+The server, dashboard, Wiki library, and Character Export pipeline do not sit in
+this speech path. Voice acting still works if the home server is unavailable.
+
 ## Approved request
 
 The Java plugin sends only:
@@ -77,3 +103,6 @@ normal RuneLite client.
 The ordinary Plugin Hub RuneScape Coach submission remains separate and
 unchanged.
 
+The Windows installer, task names, local paths, checks, and recovery steps are
+recorded in [OPERATIONS.md](OPERATIONS.md). The exact live pause point is
+[STATUS.md](STATUS.md).
