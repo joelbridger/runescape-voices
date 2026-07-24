@@ -2,11 +2,33 @@
 
 ## Pause point
 
-The private voice system is built, installed, and running on Jameson's Windows
-PC. Work is deliberately paused before the first real in-game listening check.
+The private voice system is built and installed on Jameson's Windows PC. Its
+current running state is recorded below. Work is deliberately paused before the
+first real in-game listening check.
 
 Do not rebuild or reinstall it merely because a new session begins. Resume with
 the listening check below.
+
+## Latest runtime finding
+
+Jameson later closed several PowerShell windows and then found that RuneLite
+dialogue was silent. A read-only Windows check proved:
+
+- `GielinorVoicesService` was installed but stopped;
+- `RuneScapeVoicesLocalLaunch` was installed but stopped;
+- ordinary `RuneLite.exe` was open on Orc Bane; and
+- `http://127.0.0.1:17855/health` was unreachable.
+
+This means the installed files are still safe, but neither half of the voice
+system is present in the current play session. Ordinary RuneLite cannot load
+this private development plugin.
+
+The active ordinary client was deliberately left open because Jameson was using
+it. To resume, first preserve the safe in-game position and close ordinary
+RuneLite, then start `GielinorVoicesService` and
+`RuneScapeVoicesLocalLaunch`. Verify health says `ready` before testing NPC
+dialogue. Do not reinstall unless those existing tasks or installed files are
+actually broken.
 
 ## What is installed
 
@@ -82,4 +104,3 @@ Dashboard and coaching-plan publication remain paused.
    process was closed, and the combined client then opened normally.
 
 These fixes are already in source and must not be undone.
-
