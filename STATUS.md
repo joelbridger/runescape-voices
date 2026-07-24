@@ -8,6 +8,11 @@ current work replaces that slow live miss with streamed ElevenLabs Flash speech.
 The hard acceptance target is `lastFirstAudioMs` at or below 1,000 on a real
 uncached NPC line.
 
+The streamed engine is now installed and active. A fresh uncached loopback test
+reached first audio in **844 ms**, with no service error. This passes the
+one-second technical target. One real NPC line remains as the final human
+experience check.
+
 ## Latest runtime finding
 
 Jameson later closed several PowerShell windows and then found that RuneLite
@@ -53,7 +58,7 @@ the finished line in the private cache. Qwen remains the no-key local choice.
 - Background task: `GielinorVoicesService`
 - Combined RuneLite task: `RuneScapeVoicesLocalLaunch`
 - Voice listener source:
-  `%LOCALAPPDATA%\GielinorVoices\source-3b201a465fdd7065b9927a09f186b2a00de605c7`
+  `%LOCALAPPDATA%\GielinorVoices\source-aee1a522fbc36967c0b58b06453480fa6a8934d8`
 - Service environment:
   `%LOCALAPPDATA%\GielinorVoices\service`
 - Models, cache, and service log:
@@ -65,17 +70,16 @@ Never read, print, copy, or upload the pairing key. Never read RuneLite's
 `credentials.properties`. The installed programs use those files privately.
 
 The installed voice source is commit
-`3b201a465fdd7065b9927a09f186b2a00de605c7`. It includes the RuneScape Coach
+`aee1a522fbc36967c0b58b06453480fa6a8934d8`. It includes the RuneScape Coach
 plugin pinned at `736ab5f8`. The private installer verifies both downloaded
 archives before using them.
 
-The updated service is running and health proves it is the new build because the
-response includes `lastFirstAudioMs`. It currently names Qwen because the
-ElevenLabs key has not yet been installed.
+The updated service is running and health names the ElevenLabs Flash engine.
+The response includes `lastFirstAudioMs: 844` and no error.
 
 ## What has been proved
 
-- Eight Python voice-service tests passed on the actual Windows installation.
+- Twelve Python voice-service tests passed on the actual Windows installation.
 - The voice and coach Java tests passed together in a clean Windows build.
 - The service reports `ready` with no error.
 - Qwen3-TTS 0.6B CustomVoice loaded on the RTX 5070.
@@ -88,10 +92,10 @@ ElevenLabs key has not yet been installed.
 
 ## What has not been proved yet
 
-The streamed build still needs its one-time ElevenLabs key and a real uncached
-NPC test. Health must name the ElevenLabs Flash engine and report
-`lastFirstAudioMs` at or below 1,000. No game input may be automated for that
-test.
+Jameson should speak to one real NPC in the already-running combined RuneLite
+client and confirm that the line is heard promptly and suits the character. The
+service-side one-second target is already proved at 844 ms. No game input may be
+automated for the final check.
 
 ## RuneScape coaching checkpoint
 
@@ -118,5 +122,11 @@ Dashboard and coaching-plan publication remain paused.
    17855. Only the two proven old voice processes were stopped. Both setup
    helpers now verify the exact installed voice command before stopping it and
    refuse to stop an unrelated program.
+5. The online setup stored the key under `runtime/secrets`, while the first
+   service build looked one folder higher. The service now derives the protected
+   key path from its selected data folder, with a regression test.
+6. The first dedicated provider key appeared in a diagnostic capture. It was
+   deleted before use. Its restricted replacement was transferred without
+   printing it, and the temporary server copy was securely removed.
 
 These fixes are already in source and must not be undone.
