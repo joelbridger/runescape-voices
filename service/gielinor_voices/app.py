@@ -24,10 +24,6 @@ def _default_token_file() -> Path:
     return Path.home() / ".runelite" / "gielinor-voices" / "token"
 
 
-def _default_elevenlabs_key_file() -> Path:
-    return _default_data_dir() / "secrets" / "elevenlabs-api-key"
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Private local RuneScape voice service")
     parser.add_argument("--host", default="127.0.0.1")
@@ -37,7 +33,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--elevenlabs-key-file",
         type=Path,
-        default=_default_elevenlabs_key_file(),
+        help="Defaults to <data-dir>/secrets/elevenlabs-api-key",
     )
     parser.add_argument("--log-file", type=Path)
     return parser
@@ -61,9 +57,14 @@ def main() -> None:
         handlers=handlers,
     )
 
-    if args.elevenlabs_key_file.exists():
+    elevenlabs_key_file = (
+        args.elevenlabs_key_file
+        if args.elevenlabs_key_file is not None
+        else args.data_dir / "secrets" / "elevenlabs-api-key"
+    )
+    if elevenlabs_key_file.exists():
         engine_factory = lambda: ElevenLabsVoiceEngine(  # noqa: E731
-            args.elevenlabs_key_file,
+            elevenlabs_key_file,
             args.data_dir / "elevenlabs-voices.json",
         )
         logging.getLogger(__name__).info(
