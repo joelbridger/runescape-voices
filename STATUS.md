@@ -104,7 +104,8 @@ account had no API speech allowance available for new lines. This explained why
 Jameson heard cached NPC speech but not a new player line. Jameson then upgraded
 the account to the Starter plan himself. The ElevenLabs account page confirms
 Starter is active, and the Windows voice service is running `ready` with no
-error. One manual player-dialogue line remains to confirm the male cast audibly.
+error. Jameson then confirmed that the male player voice works great in the
+real game. The online voice system is fully accepted.
 
 ## RuneScape coaching checkpoint
 
