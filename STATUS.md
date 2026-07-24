@@ -53,7 +53,7 @@ the finished line in the private cache. Qwen remains the no-key local choice.
 - Background task: `GielinorVoicesService`
 - Combined RuneLite task: `RuneScapeVoicesLocalLaunch`
 - Voice listener source:
-  `%LOCALAPPDATA%\GielinorVoices\source-62f95ed083f5ea13562defb97525236d3bfb28a3`
+  `%LOCALAPPDATA%\GielinorVoices\source-3b201a465fdd7065b9927a09f186b2a00de605c7`
 - Service environment:
   `%LOCALAPPDATA%\GielinorVoices\service`
 - Models, cache, and service log:
@@ -65,9 +65,13 @@ Never read, print, copy, or upload the pairing key. Never read RuneLite's
 `credentials.properties`. The installed programs use those files privately.
 
 The installed voice source is commit
-`62f95ed083f5ea13562defb97525236d3bfb28a3`. It includes the RuneScape Coach
+`3b201a465fdd7065b9927a09f186b2a00de605c7`. It includes the RuneScape Coach
 plugin pinned at `736ab5f8`. The private installer verifies both downloaded
 archives before using them.
+
+The updated service is running and health proves it is the new build because the
+response includes `lastFirstAudioMs`. It currently names Qwen because the
+ElevenLabs key has not yet been installed.
 
 ## What has been proved
 
@@ -84,10 +88,10 @@ archives before using them.
 
 ## What has not been proved yet
 
-The streamed build still needs its one-time ElevenLabs key, a Windows install,
-and a real uncached NPC test. Health must name the ElevenLabs Flash engine and
-report `lastFirstAudioMs` at or below 1,000. No game input may be automated for
-that test.
+The streamed build still needs its one-time ElevenLabs key and a real uncached
+NPC test. Health must name the ElevenLabs Flash engine and report
+`lastFirstAudioMs` at or below 1,000. No game input may be automated for that
+test.
 
 ## RuneScape coaching checkpoint
 
@@ -110,5 +114,9 @@ Dashboard and coaching-plan publication remain paused.
    support Python 3.12. The service now pins the tested modern package set.
 3. The normal RuneLite window did not finish a gentle close. Only that old
    process was closed, and the combined client then opened normally.
+4. The old Python speaker survived one scheduled-task replacement and held port
+   17855. Only the two proven old voice processes were stopped. Both setup
+   helpers now verify the exact installed voice command before stopping it and
+   refuse to stop an unrelated program.
 
 These fixes are already in source and must not be undone.
