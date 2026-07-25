@@ -109,11 +109,12 @@ real game. The online voice system is fully accepted.
 
 ## RuneScape coaching checkpoint
 
-Voice work did not move the account. The separate RuneScape Coach project is
-paused outside the Recipe for Disaster banquet room after the opening banquet
-scene. No frozen guest has been inspected yet. The next recommended subquest is
-the Goblin Generals. The authoritative instructions are in:
+Voice work and account coaching remain separate. The RuneScape Coach project
+has advanced well beyond the old banquet pause: Skrach Uglogwee is now in
+progress, after completion of Another Cook, Goblin Generals, Mountain Dwarf, and
+Pirate Pete. The authoritative live instructions are in:
 
+- `/home/jameson/RuneScape/HANDOFF_TO_CLAUDE.md`
 - `/home/jameson/RuneScape/plans/CURRENT.md`
 - `/home/jameson/RuneScape/plans/FORWARD.md`
 
